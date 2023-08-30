@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
 
-    # my apps
+    # my_apps
     'cars',
 ]
 
@@ -68,10 +68,10 @@ WSGI_APPLICATION = 'configs.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'drf_v3',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
+        'NAME': 'drfdes2023v3',
+        'USER': 'drfdes2023v3',
+        'PASSWORD': 'drfdes2023v3',
+        'HOST': 'owu.linkpc.net',
         'PORT': 3306
     }
 }

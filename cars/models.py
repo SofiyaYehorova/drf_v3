@@ -6,5 +6,7 @@ class CarModel(models.Model):
         db_table = 'cars'
 
     brand = models.CharField(max_length=25)
-    price = models.IntegerField()
     year = models.IntegerField()
+    seat_count = models.IntegerField()
+    body_type = models.CharField(max_length=25)
+    engine_volume = models.FloatField()
