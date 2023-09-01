@@ -10,4 +10,3 @@ class AutoParkSerializer(serializers.ModelSerializer):
     class Meta:
         model = AutoParkModel
         fields = ('id', 'name', 'cars')
-        # depth = 1  # показує рівень вкладеності дочірних елементів
