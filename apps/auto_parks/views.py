@@ -11,36 +11,11 @@ from apps.cars.serializers import CarSerializer
 from .models import AutoParkModel
 from .serializers import AutoParkSerializer
 
-# class AutoParkListCreateView(GenericAPIView, ListModelMixin, CreateModelMixin):
-#     serializer_class = AutoParkSerializer  # for create
-#     queryset = AutoParkModel.objects.all()  # for get
-#
-#     def get(self, request, *args, **kwargs):
-#         return super().list(request, *args, **kwargs)
-#
-#     def post(self, request, *args, **kwargs):
-#         return super().create(request, *args, **kwargs)
-
 
 class AutoParkListCreateView(ListCreateAPIView):
     serializer_class = AutoParkSerializer  # for create
     queryset = AutoParkModel.objects.prefetch_related('cars')  # for get
     pagination_class = None
-
-    # def get(self, request, *args, **kwargs):
-    #     return super().list(request, *args, **kwargs)
-    #
-    # def post(self, request, *args, **kwargs):
-    #     return super().create(request, *args, **kwargs)
-
-    # def get_queryset(self):
-    #     queryset = super().queryset()
-    #     print(queryset[0].__dict__)
-    #     return queryset
-    #
-    # def get(self, request, *args, **kwargs):
-    #     self.get_queryset()
-    #     return Response('ok')
 
 
 class AutoParkRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
@@ -68,5 +43,5 @@ class AutoParkCarListCreateView(GenericAPIView):
         exists = AutoParkModel.objects.filter(pk=pk).exists()
         if not exists:
             raise Http404()
-        serializer.save(auto_park=pk)
+        serializer.save(auto_park_id=pk)
         return Response(serializer.data, status.HTTP_201_CREATED)

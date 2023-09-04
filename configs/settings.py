@@ -29,6 +29,9 @@ DEBUG = os.environ.get('DEBUG') == 'True'
 
 ALLOWED_HOSTS = []
 
+# Auth User
+AUTH_USER_MODEL = 'users.UserModel'
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -36,6 +39,7 @@ INSTALLED_APPS = [
 
     # my apps
     'core',
+    'apps.users',
     'apps.auto_parks',
     'apps.cars',
 

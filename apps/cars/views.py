@@ -15,7 +15,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .filters import car_filtered_queryset
+from .filters import CarFilter
+# from .filters import car_filtered_queryset
 from .models import CarModel
 from .serializers import CarSerializer
 
@@ -23,9 +24,11 @@ from .serializers import CarSerializer
 class CarListView(ListAPIView):
     serializer_class = CarSerializer
     # pagination_class = PageNumberPagination
+    queryset = CarModel.objects.all()
+    filterset_class=CarFilter
 
-    def get_queryset(self):
-        return car_filtered_queryset(self.request.query_params)
+    # def get_queryset(self):
+    #     return car_filtered_queryset(self.request.query_params)
 
 
 class CarRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
