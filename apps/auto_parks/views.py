@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.response import Response
-
+from rest_framework.permissions import IsAdminUser, AllowAny
 from apps.cars.models import CarModel
 from apps.cars.serializers import CarSerializer
 
@@ -16,6 +16,13 @@ class AutoParkListCreateView(ListCreateAPIView):
     serializer_class = AutoParkSerializer  # for create
     queryset = AutoParkModel.objects.prefetch_related('cars')  # for get
     pagination_class = None
+
+    # permission_classes = (IsAdminUser,)
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return (AllowAny(),)
+
+        return (IsAdminUser(),)
 
 
 class AutoParkRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
