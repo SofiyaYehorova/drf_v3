@@ -8,6 +8,11 @@ class ActionTokenEnum(Enum):
         timedelta(minutes=30)
     )
 
+    RECOVERY = (
+        'recovery',
+        timedelta(minutes=10)
+    )
+
     def __init__(self, token_type, life_time):
         self.life_time = life_time
         self.token_type = token_type
