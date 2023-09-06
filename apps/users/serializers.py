@@ -5,6 +5,7 @@ from rest_framework import serializers
 
 from apps.users.models import ProfileModel
 from apps.users.models import UserModel as User
+from core.services.email_service import EmailService
 
 UserModel: User = get_user_model()
 
@@ -12,7 +13,18 @@ UserModel: User = get_user_model()
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileModel
-        fields = ('id', 'name', 'surname', 'age',)
+        fields = ('id', 'name', 'surname', 'age', 'avatar',)
+
+
+class AvatarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfileModel
+        fields = ('avatar',)
+        extra_kwargs = {
+            'avatar': {
+                'required': True
+            }
+        }
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -42,4 +54,5 @@ class UserSerializer(serializers.ModelSerializer):
         profile = validated_data.pop('profile')
         profile = ProfileModel.objects.create(**profile)
         user = UserModel.objects.create_user(profile=profile, **validated_data)
+        EmailService.register_email(user)
         return user
