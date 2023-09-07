@@ -22,7 +22,15 @@ class ProfileModel(BaseModel):
     age = models.IntegerField(validators=[
         validators.MinValueValidator(16), validators.MaxValueValidator(150),
     ])
-    avatar = models.ImageField(upload_to=upload_avatar, blank=True)
+    # avatar = models.ImageField(upload_to=upload_avatar, blank=True)
+
+
+class AvatarModel(BaseModel):
+    class Meta:
+        db_table = 'profile_avatars'
+
+    image = models.ImageField(upload_to=upload_avatar)
+    profile = models.ForeignKey(ProfileModel, on_delete=models.CASCADE, related_name='avatars')
 
 
 class UserModel(AbstractBaseUser, PermissionsMixin, BaseModel):

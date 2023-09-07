@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 
-from rest_framework.generics import ListCreateAPIView, GenericAPIView, UpdateAPIView
+from rest_framework.generics import ListCreateAPIView, GenericAPIView, UpdateAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from apps.users.models import UserModel as User
@@ -10,7 +10,7 @@ from .filters import UserFilter
 from rest_framework.permissions import AllowAny, IsAdminUser
 
 UserModel: User = get_user_model()
-from .serializers import UserSerializer, AvatarSerializer
+from .serializers import UserSerializer, AvatarSerializer, UserAvatarListSerializer
 from core.services.email_service import EmailService
 
 
@@ -30,6 +30,8 @@ class UserListCreateView(ListCreateAPIView):
         return super().get_queryset().exclude(pk=self.request.user.pk)
 
 
+#                             UPLOAD ONE PHOTO
+
 # class UserAddAvatarView(GenericAPIView):
 #     serializer_class = AvatarSerializer
 #
@@ -41,16 +43,40 @@ class UserListCreateView(ListCreateAPIView):
 #         serializer.save()
 #         return Response(serializer.data, status.HTTP_200_OK)
 
-class UserAddAvatarView(UpdateAPIView):  # підкапотно використовує два методи put and patch
-    serializer_class = AvatarSerializer
-    http_method_names = ('put',)  # вказуємо який з методів будемо використовути, інший метод заблоковано
+# class UserAddAvatarView(UpdateAPIView):  # підкапотно використовує два методи put and patch
+#     serializer_class = AvatarSerializer
+#     http_method_names = ('put',)  # вказуємо який з методів будемо використовути, інший метод заблоковано
+#
+#     def get_object(self):
+#         return UserModel.objects.all_with_profiles().get(pk=self.request.user.pk).profile
+#
+#     def perform_update(self, serializer):
+#         self.get_object().avatar.delete()
+#         super().perform_update(serializer)
 
-    def get_object(self):
-        return UserModel.objects.all_with_profiles().get(pk=self.request.user.pk).profile
+#                                   UPLOAD MANY PHOTO
 
-    def perform_update(self, serializer):
-        self.get_object().avatar.delete()
-        super().perform_update(serializer)
+# class UserAddAvatarsView(GenericAPIView):
+#     serializer_class = UserAvatarListSerializer
+#
+#     def get_serializer_context(self):
+#         context = super().get_serializer_context()
+#         context |= {'profile': self.request.user.profile}
+#         return context
+#
+#     def post(self, *args, **kwargs):
+#         serializer = self.get_serializer(data=self.request.FILES)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status.HTTP_201_CREATED)
+
+class UserAddAvatarsView(CreateAPIView):
+    serializer_class = UserAvatarListSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context |= {'profile': self.request.user.profile}
+        return context
 
 
 class UserToAdminView(GenericAPIView):
