@@ -1,51 +1,46 @@
 from django.contrib.auth import get_user_model
 
-from rest_framework.generics import ListCreateAPIView, GenericAPIView, UpdateAPIView, CreateAPIView
-from rest_framework.response import Response
 from rest_framework import status
-from apps.users.models import UserModel as User
+from rest_framework.generics import CreateAPIView, GenericAPIView, ListCreateAPIView, UpdateAPIView
+from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.response import Response
+
+from drf_yasg.utils import no_body, swagger_auto_schema
+
 from core.permissions import IsAdminOrWriteOnlyPermission, IsSuperUser
 
+from apps.users.models import UserModel as User
+
 from .filters import UserFilter
-from rest_framework.permissions import AllowAny, IsAdminUser
 
 UserModel: User = get_user_model()
-from .serializers import UserSerializer, AvatarSerializer
 from core.services.email_service import EmailService
+
+from .serializers import AvatarSerializer, UserSerializer
 
 
 class UserListCreateView(ListCreateAPIView):
+    '''
+        get:
+            Get all users
+        post:
+            Create user
+
+    '''
     serializer_class = UserSerializer
     queryset = UserModel.objects.all_with_profiles()
     filterset_class = UserFilter
-    # permission_classes = (AllowAny,)
     permission_classes = (IsAdminOrWriteOnlyPermission,)
 
     def get_queryset(self):
         return super().get_queryset().exclude(pk=self.request.user.pk)
 
-    # def get_permissions(self):
-    #     if self.request.method == 'GET':
-    #         return (IsAdminUser(),)
-    #     return super().get_permissions()
-
-
-
-
-#                             UPLOAD ONE PHOTO
-
-# class UserAddAvatarView(GenericAPIView):
-#     serializer_class = AvatarSerializer
-#
-#     def put(self, *args, **kwargs):
-#         # serializer = AvatarSerializer(self.request.user.profile, data=self.request.FILES,
-#         #                               context={'request': self.request})
-#         serializer = self.get_serializer(self.request.user.profile, data=self.request.FILES)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response(serializer.data, status.HTTP_200_OK)
 
 class UserAddAvatarView(UpdateAPIView):  # підкапотно використовує два методи put and patch
+    '''
+        put:
+            Update a model instance(user) add photo
+    '''
     serializer_class = AvatarSerializer
     http_method_names = ('put',)  # вказуємо який з методів будемо використовути, інший метод заблоковано
 
@@ -56,38 +51,20 @@ class UserAddAvatarView(UpdateAPIView):  # підкапотно використ
         self.get_object().avatar.delete()
         super().perform_update(serializer)
 
-#                                   UPLOAD MANY PHOTO
-
-# class UserAddAvatarsView(GenericAPIView):
-#     serializer_class = UserAvatarListSerializer
-#
-#     def get_serializer_context(self):
-#         context = super().get_serializer_context()
-#         context |= {'profile': self.request.user.profile}
-#         return context
-#
-#     def post(self, *args, **kwargs):
-#         serializer = self.get_serializer(data=self.request.FILES)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response(serializer.data, status.HTTP_201_CREATED)
-
-# class UserAddAvatarsView(CreateAPIView):
-#     serializer_class = UserAvatarListSerializer
-#
-#     def get_serializer_context(self):
-#         context = super().get_serializer_context()
-#         context |= {'profile': self.request.user.profile}
-#         return context
-
 
 class UserToAdminView(GenericAPIView):
+    '''
+           patch:
+               Changing permission from user to admin
+       '''
     permission_classes = (IsSuperUser,)
     queryset = UserModel.objects.all()
+    serializer_class = UserSerializer
 
     def get_queryset(self):
         return super().get_queryset().exclude(pk=self.request.user.pk)
 
+    @swagger_auto_schema(request_body=no_body)
     def patch(self, *args, **kwargs):
         user = self.get_object()
         if not user.is_staff:
@@ -98,12 +75,18 @@ class UserToAdminView(GenericAPIView):
 
 
 class AdminToUserView(GenericAPIView):
+    '''
+        patch:
+            Changing permission from admin to user
+    '''
     permission_classes = (IsSuperUser,)
     queryset = UserModel.objects.all()
+    serializer_class = UserSerializer
 
     def get_queryset(self):
         return super().get_queryset().exclude(pk=self.request.user.pk)
 
+    @swagger_auto_schema(request_body=no_body)
     def patch(self, *args, **kwargs):
         user: User = self.get_object()
         if user.is_staff:
@@ -114,12 +97,18 @@ class AdminToUserView(GenericAPIView):
 
 
 class BlockUserView(GenericAPIView):
+    '''
+       patch:
+           Block user
+   '''
     permission_classes = (IsAdminUser,)
     queryset = UserModel.objects.all()
+    serializer_class = UserSerializer
 
     def get_queryset(self):
         return super().get_queryset().exclude(pk=self.request.user.pk)
 
+    @swagger_auto_schema(request_body=no_body)
     def patch(self, *args, **kwargs):
         user = self.get_object()
         if user.is_active:
@@ -130,12 +119,18 @@ class BlockUserView(GenericAPIView):
 
 
 class UnBlockUserView(GenericAPIView):
+    '''
+       patch:
+           Unblock user
+   '''
     permission_classes = (IsAdminUser,)
     queryset = UserModel.objects.all()
+    serializer_class = UserSerializer
 
     def get_queryset(self):
         return super().get_queryset().exclude(pk=self.request.user.pk)
 
+    @swagger_auto_schema(request_body=no_body)
     def patch(self, *args, **kwargs):
         user = self.get_object()
         if not user.is_active:
@@ -146,14 +141,25 @@ class UnBlockUserView(GenericAPIView):
 
 
 class BlockAdminUserView(BlockUserView):
+    '''
+       patch:
+           Block admin(can do this just superuser)
+    '''
     permission_classes = (IsSuperUser,)
 
 
 class UnBlockAdminUserView(UnBlockUserView):
+    '''
+       patch:
+           Unblock admin(can do this just superuser)
+    '''
     permission_classes = (IsSuperUser,)
 
 
 class TestEmailView(GenericAPIView):
+    '''
+        get user email for check it
+    '''
     permission_classes = (AllowAny,)
 
     def get(self, *args, **kwargs):
