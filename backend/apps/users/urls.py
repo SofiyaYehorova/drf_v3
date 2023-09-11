@@ -1,10 +1,19 @@
 from django.urls import path
 
-from .views import UserListCreateView, BlockUserView, UnBlockUserView, UserToAdminView, AdminToUserView, \
-    BlockAdminUserView, UnBlockAdminUserView,  TestEmailView, UserAddAvatarView
+from .views import (
+    AdminToUserView,
+    BlockAdminUserView,
+    BlockUserView,
+    TestEmailView,
+    UnBlockAdminUserView,
+    UnBlockUserView,
+    UserAddAvatarView,
+    UserListCreateView,
+    UserToAdminView,
+)
 
 urlpatterns = [
-    path('', UserListCreateView.as_view()),
+    path('', UserListCreateView.as_view(), name='users_list_create'),
     path('/avatar', UserAddAvatarView.as_view()),
     # path('/avatars', UserAddAvatarsView.as_view()),
     path('/email', TestEmailView.as_view()),
