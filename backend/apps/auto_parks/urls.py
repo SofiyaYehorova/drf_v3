@@ -5,5 +5,5 @@ from .views import AutoParkCarListCreateView, AutoParkListCreateView, AutoParkRe
 urlpatterns = [
     path('', AutoParkListCreateView.as_view(), name='auto_parks_list_create'),
     path('/<int:pk>', AutoParkRetrieveUpdateDestroyView.as_view(), name='auto_parks_retrieve_update_destroy'),
-    path('/<int:pk>/cars', AutoParkCarListCreateView.as_view()),
+    path('/<int:pk>/cars', AutoParkCarListCreateView.as_view(), name='auto_parks_list_create_car'),
 ]
