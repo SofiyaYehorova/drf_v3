@@ -1,7 +1,7 @@
 import {w3cwebsocket as W3cWebsocket} from 'websocket'
 import {apiService} from "./api.service";
 
-const baseURL = 'ws://localhost/api'
+const baseURL = 'ws://sdfdddd.us-east-1.elasticbeanstalk.com/api'
 
 const socketService = async () => {
     const {data: {token}} = await apiService.get('/auth/socket_token')
